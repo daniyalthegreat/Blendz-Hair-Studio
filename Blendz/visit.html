@@ -113,6 +113,14 @@
     transition:opacity .4s ease;
   }
 
+  /* ===== 3D perspective stage ===== */
+  .tilt-stage{ perspective: 1400px; }
+  .tilt-el{
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1);
+    will-change: transform;
+  }
+
   /* ===== NAV ===== */
   header{
     position:fixed;
@@ -268,84 +276,90 @@
     color:var(--ivory);
   }
 
-  /* ===== MAP HERO — the map itself is the hero, not a photo or card ===== */
-  .map-hero{
+  /* ===== SPLIT HERO — copy left, framed glowing map card right ===== */
+  .split-hero{
     position:relative;
-    height:100vh;
-    min-height:640px;
-    padding-top:100px;
+    padding-top:170px;
+    padding-bottom:90px;
+    background:
+      radial-gradient(ellipse 120% 70% at 50% -10%, rgba(51,71,61,0.9), transparent 60%),
+      linear-gradient(180deg, var(--sage-deepest), var(--sage-deep) 60%, var(--sage-deepest));
+    overflow:hidden;
   }
-  .map-hero iframe{
-    position:absolute;
-    inset:0;
-    width:100%;height:100%;
-    border:0;
-    filter: grayscale(0.55) invert(0.92) contrast(0.9) brightness(0.95);
-    z-index:0;
+  .split-hero-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+    align-items:center;
   }
-  .map-hero::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:linear-gradient(180deg, rgba(24,36,32,0.75) 0%, rgba(24,36,32,0.15) 30%, transparent 55%, rgba(18,16,11,0.9) 100%);
-    z-index:1;
-    pointer-events:none;
-  }
-  .map-hero-content{
-    position:relative;
-    z-index:2;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    padding-bottom:60px;
-  }
-  .breadcrumb{
-    display:flex;align-items:center;gap:8px;
-    font-size:12.5px;color:var(--ivory-dim);
-    margin-bottom:22px;
-  }
-  .breadcrumb a{color:var(--gold-soft);transition:color .3s;}
-  .breadcrumb a:hover{color:var(--amber);}
-  .breadcrumb .sep{opacity:0.5;}
-  .map-hero h1{
-    font-size:clamp(38px, 5.4vw, 70px);
+  .split-hero h1{
+    font-size:clamp(38px, 5vw, 64px);
     color:var(--ivory);
-    margin:20px 0 16px;
+    margin:20px 0 22px;
     font-weight:400;
-    max-width:640px;
+    max-width:560px;
   }
-  .map-hero h1 .accent{
+  .split-hero h1 .accent{
     color:var(--amber);
     background:linear-gradient(120deg, var(--amber), var(--gold-soft));
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   }
+  .split-hero p.lede{
+    font-size:16.5px;
+    line-height:1.75;
+    color:var(--ivory-dim);
+    max-width:460px;
+    font-weight:300;
+    margin-bottom:36px;
+  }
+  .split-hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
 
-  .map-pin-card{
-    align-self:flex-end;
-    max-width:380px;
-    width:100%;
-    background:rgba(18,16,11,0.92);
+  .map-card-frame{
+    position:relative;
+    border-radius:26px;
+    padding:10px;
+    background:linear-gradient(155deg, rgba(240,185,77,0.25), rgba(244,239,227,0.05));
     border:1px solid var(--gold);
-    border-radius:20px;
-    padding:30px 32px;
-    backdrop-filter:blur(10px);
-    box-shadow:0 40px 90px -30px rgba(0,0,0,0.8);
-    pointer-events:auto;
+    box-shadow:0 50px 100px -30px rgba(0,0,0,0.75), 0 0 60px -10px rgba(240,185,77,0.15);
   }
-  .map-pin-card .status{
+  .map-card-inner{
+    position:relative;
+    border-radius:18px;
+    overflow:hidden;
+    aspect-ratio:1/1;
+  }
+  .map-card-inner iframe{
+    width:100%;height:100%;
+    border:0;
+    filter: sepia(0.15) saturate(0.85) brightness(0.92) contrast(1.05);
+  }
+  .map-card-badge{
+    position:absolute;
+    top:20px;left:20px;
+    background:rgba(18,16,11,0.9);
+    border:1px solid var(--gold);
+    border-radius:100px;
+    padding:9px 18px;
+    font-size:12px;
+    color:var(--ivory);
+    backdrop-filter:blur(8px);
+    z-index:2;
     display:flex;align-items:center;gap:8px;
-    font-size:12px;letter-spacing:0.06em;text-transform:uppercase;
-    color:var(--ivory-dim);margin-bottom:16px;
   }
-  .map-pin-card .status .dot{
+  .map-card-badge .dot{
     width:7px;height:7px;border-radius:50%;flex-shrink:0;
   }
-  .map-pin-card .status .dot.open{background:#7fd48a;box-shadow:0 0 8px rgba(127,212,138,0.7);}
-  .map-pin-card .status .dot.closed{background:#e08a6b;box-shadow:0 0 8px rgba(224,138,107,0.7);}
-  .map-pin-card h3{font-size:20px;color:var(--ivory);font-weight:400;margin-bottom:8px;}
-  .map-pin-card p{font-size:13px;color:var(--ivory-dim);line-height:1.6;margin-bottom:20px;}
-  .map-pin-card .btn{width:100%;justify-content:center;}
+  .map-card-badge .dot.open{background:#7fd48a;box-shadow:0 0 8px rgba(127,212,138,0.7);}
+  .map-card-badge .dot.closed{background:#e08a6b;box-shadow:0 0 8px rgba(224,138,107,0.7);}
+  .map-card-footer{
+    position:absolute;
+    bottom:0;left:0;right:0;
+    padding:20px 22px;
+    background:linear-gradient(180deg, transparent, rgba(18,16,11,0.95) 60%);
+    z-index:2;
+  }
+  .map-card-footer b{display:block;font-size:15px;color:var(--ivory);font-family:var(--ff-display);font-weight:400;margin-bottom:4px;}
+  .map-card-footer span{font-size:12px;color:var(--ivory-dim);}
 
   /* ===== SECTION BASICS ===== */
   section{position:relative;z-index:1;}
@@ -573,10 +587,11 @@
     .getting-here-item{border-left:none;border-top:1px solid var(--line);}
     .getting-here-item:nth-child(1),.getting-here-item:nth-child(2){border-top:none;}
     .hours-section{grid-template-columns:1fr;gap:50px;}
-    .map-pin-card{max-width:100%;}
+    .split-hero-grid{grid-template-columns:1fr;gap:40px;}
+    .map-card-frame{max-width:460px;margin:0 auto;}
   }
   @media (max-width:640px){
-    .map-hero{height:88vh;min-height:560px;padding-top:90px;}
+    .split-hero{padding-top:140px;padding-bottom:60px;}
     .section-pad{padding:70px 0;}
     .getting-here-row{grid-template-columns:1fr;}
     .getting-here-item{border-left:none !important;border-top:1px solid var(--line);padding:34px 0;}
@@ -625,22 +640,31 @@
 </div>
 
 <!-- ===== MAP HERO — the map is the hero itself ===== -->
-<section class="map-hero">
-  <iframe src="https://www.google.com/maps?q=Blendz+Hair+Studio+%26+Spa+North+Nazimabad+Karachi&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-  <div class="wrap map-hero-content">
+<section class="split-hero">
+  <div class="wrap split-hero-grid">
     <div>
       <div class="breadcrumb reveal in"><a href="index.html">Home</a><span class="sep">/</span><span>Visit</span></div>
-      <div class="eyebrow on-image">Find Us</div>
+      <div class="eyebrow">Find Us</div>
       <h1 class="reveal in">Block B, one <span class="accent">WhatsApp</span> away.</h1>
-    </div>
-    <div class="map-pin-card reveal in">
-      <div class="status" id="hoursStatus">
-        <span class="dot open" id="statusDot"></span>
-        <span id="statusText">Checking hours…</span>
+      <p class="lede">Open daily until 11PM in North Nazimabad. No walk-in guesswork — message us and we'll confirm your slot before you leave the house.</p>
+      <div class="split-hero-ctas reveal in">
+        <a href="https://wa.me/923072463117" target="_blank" class="btn btn-gold">Message on WhatsApp</a>
+        <a href="tel:+923072463117" class="btn btn-ghost">Call Now</a>
       </div>
-      <h3>BLENDZ by Wasim</h3>
-      <p>Block B, North Nazimabad Town, Karachi, 74600, Pakistan</p>
-      <a href="https://wa.me/923072463117" target="_blank" class="btn btn-gold">Message on WhatsApp</a>
+    </div>
+
+    <div class="map-card-frame reveal in tilt-stage">
+      <div class="map-card-inner tilt-el">
+        <div class="map-card-badge">
+          <span class="dot open" id="statusDot"></span>
+          <span id="statusText">Checking hours…</span>
+        </div>
+        <iframe src="https://www.google.com/maps?q=Blendz+Hair+Studio+%26+Spa+North+Nazimabad+Karachi&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div class="map-card-footer">
+          <b>BLENDZ by Wasim</b>
+          <span>Block B, North Nazimabad Town, Karachi</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -898,6 +922,27 @@
       }
     });
   });
+
+  // ===== 3D tilt on map card (desktop pointer only) =====
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.tilt-stage').forEach(stage => {
+      const els = stage.querySelectorAll('.tilt-el');
+      stage.addEventListener('mousemove', (e) => {
+        const rect = stage.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        els.forEach(el => {
+          const max = 6;
+          const ry = (px - 0.5) * max * 2;
+          const rx = (0.5 - py) * max * 2;
+          el.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+        });
+      });
+      stage.addEventListener('mouseleave', () => {
+        els.forEach(el => { el.style.transform = 'rotateY(0deg) rotateX(0deg)'; });
+      });
+    });
+  }
 
   // ===== Live open/closed status + highlight today's hours row =====
   (function hoursLogic(){
