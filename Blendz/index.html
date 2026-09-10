@@ -910,7 +910,7 @@
       <li><a href="services.html">Services</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="reviews.html">Reviews</a></li>
-      <li><a href="visit.html">Visit</a></li>
+      <li><a href="#visit">Visit</a></li>
     </ul>
     <div class="nav-cta">
       <button class="burger" id="burgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -923,7 +923,7 @@
   <a href="services.html">Services</a>
   <a href="#gallery">Gallery</a>
   <a href="reviews.html">Reviews</a>
-  <a href="visit.html">Visit</a>
+  <a href="#visit">Visit</a>
 </div>
 
 <!-- ===== HERO ===== -->
@@ -1086,7 +1086,7 @@
     <div class="reviews-grid tilt-stage">
       <div class="review-card tilt-el reveal">
         <div class="stars">★★★★★</div>
-        <p>"I had an exceptional experience with Waseem. He is a consummate professional and a highly skilled hair stylist — his attention to detail and expertise are truly impressive."</p>
+        <p>"I had an exceptional experience with Waseem. He is a consummate professional and a highly skilled hair stylist — his attention to detail and expertise are truly impressive, Highly recommended."</p>
         <div class="review-who">
           <div class="review-avatar">Z</div>
           <div><b>Zaeem Ahmed</b><span>9 reviews · Google</span></div>
@@ -1180,10 +1180,10 @@
       </div>
       <div class="footer-col">
         <h4>Explore</h4>
-        <a href="#about">Studio</a>
-        <a href="#services">Services</a>
+        <a href="studio.html">Studio</a>
+        <a href="services.html">Services</a>
         <a href="#gallery">Gallery</a>
-        <a href="#reviews">Reviews</a>
+        <a href="reviews.html">Reviews</a>
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
@@ -1216,14 +1216,15 @@
     header.classList.toggle('scrolled', window.scrollY > 40);
   });
 
-  // ===== Scroll-spy nav highlighting =====
+  // ===== Scroll-spy nav highlighting (only for in-page anchor links) =====
   const navAnchors = document.querySelectorAll('.nav-links a');
-  const spySections = Array.from(navAnchors).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const inPageAnchors = Array.from(navAnchors).filter(a => a.getAttribute('href').startsWith('#'));
+  const spySections = inPageAnchors.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
   const spyObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const id = '#' + entry.target.id;
-        navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+        inPageAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
       }
     });
   }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
@@ -1273,9 +1274,23 @@
     burgerBtn.classList.toggle('active');
     mobileMenu.classList.toggle('open');
   });
-  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href');
     burgerBtn.classList.remove('active');
     mobileMenu.classList.remove('open');
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        // wait for the menu-close transition/layout shift to finish before measuring position
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const y = target.getBoundingClientRect().top + window.scrollY - 90;
+            window.scrollTo({top:y, behavior:'smooth'});
+          });
+        });
+      }
+    }
   }));
 
   // ===== Scroll reveal =====
@@ -1308,8 +1323,9 @@
     glowField.appendChild(el);
   });
 
-  // ===== Smooth anchor scroll offset for fixed header =====
+  // ===== Smooth anchor scroll offset for fixed header (desktop nav + in-page links, excludes mobile menu which handles its own) =====
   document.querySelectorAll('a[href^="#"]').forEach(a => {
+    if (a.closest('#mobileMenu')) return; // mobile menu links handle their own scroll above
     a.addEventListener('click', (e) => {
       const id = a.getAttribute('href');
       if(id.length > 1){
